@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "export-data": "tsx scripts/export-data-to-json.ts",
+    "prebuild": "npm run export-data",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

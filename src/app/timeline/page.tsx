@@ -1,44 +1,37 @@
-import { prisma } from '@/lib/db/prisma';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import TimelineClient from '@/components/calendar/TimelineClient';
 
-export default async function TimelinePage() {
-  const events = await prisma.event.findMany({
-    orderBy: { date: 'asc' },
-  });
+interface EventData {
+  id: string;
+  recordId: string;
+  name: string;
+  date: string;
+  time: string | null;
+  weekday: string | null;
+  eventType: string;
+  category: string;
+  company: string;
+  aiRecommend: string | null;
+  importance: string | null;
+  country: string | null;
+  city: string | null;
+  location: string | null;
+  link: string | null;
+  infoLink: string | null;
+  summary: string | null;
+  description: string | null;
+}
 
-  const serializedEvents = events.map((event) => ({
-    id: event.id,
-    recordId: event.recordId,
-    name: event.name,
-    date: event.date.toISOString(),
-    time: event.time,
-    weekday: event.weekday,
-    eventType: event.eventType,
-    category: event.category,
-    company: event.company,
-    aiRecommend: event.aiRecommend,
-    importance: event.importance,
-    country: event.country,
-    city: event.city,
-    location: event.location,
-    link: event.link,
-    infoLink: event.infoLink,
-    summary: event.summary,
-    description: event.description,
-  }));
-
-  const companySet = new Set<string>();
-  events.forEach((event) => {
-    try {
-      JSON.parse(event.company || '[]').forEach((c: string) => companySet.add(c));
-    } catch {}
-  });
-  const uniqueCompanies = Array.from(companySet).sort();
+export default function TimelinePage() {
+  const dataPath = join(process.cwd(), 'public', 'data', 'events.json');
+  const raw = readFileSync(dataPath, 'utf-8');
+  const data = JSON.parse(raw) as { events: EventData[]; uniqueCompanies: string[] };
 
   return (
     <TimelineClient
-      initialEvents={serializedEvents}
-      uniqueCompanies={uniqueCompanies}
+      initialEvents={data.events}
+      uniqueCompanies={data.uniqueCompanies}
     />
   );
 }

@@ -1,50 +1,37 @@
-import { prisma } from '@/lib/db/prisma';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import CalendarClient from '@/components/calendar/CalendarClient';
 
-export default async function HomePage() {
-  // Fetch all events from the database
-  const events = await prisma.event.findMany({
-    orderBy: { date: 'asc' },
-  });
+interface EventData {
+  id: string;
+  recordId: string;
+  name: string;
+  date: string;
+  time: string | null;
+  weekday: string | null;
+  eventType: string;
+  category: string;
+  company: string;
+  aiRecommend: string | null;
+  importance: string | null;
+  country: string | null;
+  city: string | null;
+  location: string | null;
+  link: string | null;
+  infoLink: string | null;
+  summary: string | null;
+  description: string | null;
+}
 
-  // Serialize events for client component
-  const serializedEvents = events.map((event) => ({
-    id: event.id,
-    recordId: event.recordId,
-    name: event.name,
-    date: event.date.toISOString(),
-    time: event.time,
-    weekday: event.weekday,
-    eventType: event.eventType,
-    category: event.category,
-    company: event.company,
-    aiRecommend: event.aiRecommend,
-    importance: event.importance,
-    country: event.country,
-    city: event.city,
-    location: event.location,
-    link: event.link,
-    infoLink: event.infoLink,
-    summary: event.summary,
-    description: event.description,
-  }));
-
-  // Extract unique companies for filter
-  const companySet = new Set<string>();
-  events.forEach((event) => {
-    try {
-      const companies = JSON.parse(event.company || '[]') as string[];
-      companies.forEach((c) => companySet.add(c));
-    } catch {
-      // ignore
-    }
-  });
-  const uniqueCompanies = Array.from(companySet).sort();
+export default function HomePage() {
+  const dataPath = join(process.cwd(), 'public', 'data', 'events.json');
+  const raw = readFileSync(dataPath, 'utf-8');
+  const data = JSON.parse(raw) as { events: EventData[]; uniqueCompanies: string[] };
 
   return (
-    <CalendarClient 
-      initialEvents={serializedEvents} 
-      uniqueCompanies={uniqueCompanies}
+    <CalendarClient
+      initialEvents={data.events}
+      uniqueCompanies={data.uniqueCompanies}
     />
   );
 }
