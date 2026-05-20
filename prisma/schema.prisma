@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  recordId    String   @unique
+  name        String
+  date        DateTime
+  time        String?
+  weekday     String?
+  eventType   String   @map("type")
+  category    String
+  company     String
+  aiRecommend String?
+  importance  String?
+  country     String?
+  city        String?
+  location    String?
+  link        String?
+  infoLink    String?
+  summary     String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([date])
+  @@index([company])
+  @@index([category])
+  @@map("events")
+}
