@@ -4,22 +4,21 @@ import { useState, useMemo } from 'react';
 import { useFilterStore } from '@/lib/store';
 import { CalendarEvent, parseCategory, parseCompany, getScoreFromLabel } from './types';
 import FilterBar from './FilterBar';
-import CalendarGrid from './CalendarGrid';
-import MobileCalendar from './MobileCalendar';
+import TimelineView from './TimelineView';
 import EventDetailSheet from './EventDetailSheet';
 
-interface CalendarClientProps {
+interface TimelineClientProps {
   initialEvents: CalendarEvent[];
   uniqueCompanies: string[];
 }
 
-export default function CalendarClient({ initialEvents, uniqueCompanies }: CalendarClientProps) {
+export default function TimelineClient({ initialEvents, uniqueCompanies }: TimelineClientProps) {
   const {
     activeCategory,
     selectedCompanies,
     minScore,
     currentYear,
-    currentMonth,
+    setCurrentYear,
   } = useFilterStore();
 
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
@@ -52,31 +51,16 @@ export default function CalendarClient({ initialEvents, uniqueCompanies }: Calen
     <div className="h-screen flex flex-col bg-white overflow-hidden">
       {/* Header with all filters */}
       <header className="flex-shrink-0 border-b border-gray-200 bg-white">
-        <FilterBar uniqueCompanies={uniqueCompanies} />
+        <FilterBar uniqueCompanies={uniqueCompanies} showYearNav />
       </header>
 
-      {/* Calendar - takes remaining space */}
+      {/* Timeline - takes remaining space */}
       <main className="flex-1 min-h-0 overflow-hidden">
-        <div className="h-full max-w-[1400px] mx-auto px-4 py-2">
-          {/* PC Grid */}
-          <div className="hidden md:block h-full">
-            <CalendarGrid
-              events={filteredEvents}
-              year={currentYear}
-              month={currentMonth}
-              onEventClick={handleEventClick}
-            />
-          </div>
-          {/* Mobile */}
-          <div className="md:hidden h-full overflow-y-auto">
-            <MobileCalendar
-              events={filteredEvents}
-              year={currentYear}
-              month={currentMonth}
-              onEventClick={handleEventClick}
-            />
-          </div>
-        </div>
+        <TimelineView
+          events={filteredEvents}
+          year={currentYear}
+          onEventClick={handleEventClick}
+        />
       </main>
 
       {/* Event Detail */}
