@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFilterStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +26,7 @@ import SegmentedControl from '@/components/ui/segmented-control';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import { ChevronLeft, ChevronRight, Filter, X, CalendarDays, Clock, Telescope } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 
 const CATEGORIES = [
   { value: 'all', label: '全部', activeIndicatorClass: 'bg-slate-500', activeTextClass: 'text-white', inactiveTextClass: 'text-slate-400 hover:text-slate-500' },
@@ -35,11 +36,11 @@ const CATEGORIES = [
 ];
 
 const SCORE_OPTIONS = [
-  { value: 1, label: '全部评分' },
-  { value: 2, label: '2分以上' },
-  { value: 3, label: '3分以上' },
-  { value: 4, label: '4分以上' },
-  { value: 5, label: '仅5分' },
+  { value: 1, label: '全部' },
+  { value: 2, label: '≥2分 · 了解即可' },
+  { value: 3, label: '≥3分 · 值得知晓' },
+  { value: 4, label: '≥4分 · 推荐关注' },
+  { value: 5, label: '=5分 · 强烈推荐' },
 ];
 
 const TIER_1_AUTO = new Set(['蔚来', '小鹏', '理想', '小米', '小米汽车', '极氪', '零跑', '长安', '华为', '鸿蒙智行', '赛力斯', '阿维塔']);
@@ -99,6 +100,19 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
     nextMonth,
     setViewMode,
   } = useFilterStore();
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Sync viewMode with URL on mount
+  useEffect(() => {
+    const normalizedPath = pathname.replace(/\/$/, '') || '/';
+    if ((normalizedPath === '/timeline') && viewMode !== 'timeline') {
+      setViewMode('timeline');
+    } else if (normalizedPath === '/' && viewMode !== 'calendar') {
+      setViewMode('calendar');
+    }
+  }, [pathname, viewMode, setViewMode]);
 
   const [companyOpen, setCompanyOpen] = useState(false);
   const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
@@ -168,6 +182,11 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
             value={viewMode}
             onChange={(v) => {
               setViewMode(v as 'calendar' | 'timeline');
+              if (v === 'timeline') {
+                router.push('/timeline');
+              } else {
+                router.push('/');
+              }
             }}
           />
         </div>

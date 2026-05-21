@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState, ReactNode } from 'react';
+import { useRef, useLayoutEffect, useState, ReactNode, useCallback } from 'react';
 
 interface SegmentedOption<T extends string> {
   value: T;
@@ -33,7 +33,7 @@ export default function SegmentedControl<T extends string>({
 
   const activeOption = options.find((o) => o.value === value);
 
-  useEffect(() => {
+  const updateIndicator = useCallback(() => {
     const activeBtn = itemRefs.current.get(value);
     const container = containerRef.current;
     if (activeBtn && container) {
@@ -44,10 +44,20 @@ export default function SegmentedControl<T extends string>({
         left: bRect.left - cRect.left,
       });
     }
-  }, [value, options]);
+  }, [value]);
+
+  // Use useLayoutEffect to measure before paint
+  useLayoutEffect(() => {
+    updateIndicator();
+  }, [updateIndicator]);
+
+  // Re-measure on window resize
+  useLayoutEffect(() => {
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [updateIndicator]);
 
   const indicatorBg = activeOption?.activeIndicatorClass || 'bg-card';
-  const hasCustomColor = !!activeOption?.activeIndicatorClass;
 
   return (
     <div
@@ -76,10 +86,10 @@ export default function SegmentedControl<T extends string>({
               if (el) itemRefs.current.set(opt.value, el);
             }}
             onClick={() => onChange(opt.value)}
-            className={`relative z-10 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center justify-center gap-1.5 ${textClass}`}
+            className={`relative z-10 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center justify-center gap-1.5 text-center min-w-[3rem] ${textClass}`}
           >
             {opt.icon}
-            {opt.label}
+            <span className="text-center">{opt.label}</span>
           </button>
         );
       })}

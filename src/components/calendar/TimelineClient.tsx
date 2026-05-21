@@ -17,14 +17,26 @@ export default function TimelineClient({ initialEvents, uniqueCompanies }: Timel
     activeCategory,
     selectedCompanies,
     minScore,
-    currentYear,
   } = useFilterStore();
 
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [timelineBrand, setTimelineBrand] = useState<string | null>(null);
 
+  // Events filtered for timeline view
   const filteredEvents = useMemo(() => {
-    return initialEvents.filter((event) => {
+    let result = initialEvents;
+
+    // If a brand is selected for timeline view, filter by that brand first
+    if (timelineBrand) {
+      result = result.filter((event) => {
+        const companies = parseCompany(event.company);
+        return companies.includes(timelineBrand);
+      });
+    }
+
+    // Apply additional filters
+    result = result.filter((event) => {
       if (activeCategory !== 'all') {
         const cats = parseCategory(event.category);
         if (!cats.includes(activeCategory)) return false;
@@ -39,7 +51,10 @@ export default function TimelineClient({ initialEvents, uniqueCompanies }: Timel
       }
       return true;
     });
-  }, [initialEvents, activeCategory, selectedCompanies, minScore]);
+
+    // Sort by date (ascending)
+    return result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [initialEvents, timelineBrand, activeCategory, selectedCompanies, minScore]);
 
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
@@ -57,7 +72,9 @@ export default function TimelineClient({ initialEvents, uniqueCompanies }: Timel
       <main className="flex-1 min-h-0 overflow-hidden">
         <TimelineView
           events={filteredEvents}
-          year={currentYear}
+          timelineBrand={timelineBrand}
+          onBrandChange={setTimelineBrand}
+          uniqueCompanies={uniqueCompanies}
           onEventClick={handleEventClick}
         />
       </main>
