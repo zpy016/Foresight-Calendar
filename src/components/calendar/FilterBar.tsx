@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/command';
 import SegmentedControl from '@/components/ui/segmented-control';
 import ThemeToggle from '@/components/theme/ThemeToggle';
-import { ChevronLeft, ChevronRight, Filter, X, CalendarDays, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Filter, X, CalendarDays, Clock, Telescope } from 'lucide-react';
 import Link from 'next/link';
 
 const CATEGORIES = [
@@ -118,7 +118,7 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
       <div className="flex items-center gap-3 sm:gap-4">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
-            <span className="text-primary-foreground text-base font-bold">F</span>
+            <Telescope className="w-5 h-5 text-primary-foreground" strokeWidth={2} />
           </div>
           <div className="hidden sm:block">
             <h1 className="text-base font-bold text-foreground leading-tight">Foresight 视界线</h1>
