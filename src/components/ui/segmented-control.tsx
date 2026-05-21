@@ -6,6 +6,12 @@ interface SegmentedOption<T extends string> {
   value: T;
   label: string;
   icon?: ReactNode;
+  /** Background color class for the active indicator pill, e.g. 'bg-orange-500' */
+  activeIndicatorClass?: string;
+  /** Text color class when active, e.g. 'text-white' */
+  activeTextClass?: string;
+  /** Text color class when inactive, e.g. 'text-orange-400/60 hover:text-orange-500' */
+  inactiveTextClass?: string;
 }
 
 interface SegmentedControlProps<T extends string> {
@@ -25,6 +31,8 @@ export default function SegmentedControl<T extends string>({
   const [indicator, setIndicator] = useState({ width: 0, left: 0 });
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
+  const activeOption = options.find((o) => o.value === value);
+
   useEffect(() => {
     const activeBtn = itemRefs.current.get(value);
     const container = containerRef.current;
@@ -38,6 +46,9 @@ export default function SegmentedControl<T extends string>({
     }
   }, [value, options]);
 
+  const indicatorBg = activeOption?.activeIndicatorClass || 'bg-card';
+  const hasCustomColor = !!activeOption?.activeIndicatorClass;
+
   return (
     <div
       ref={containerRef}
@@ -45,30 +56,33 @@ export default function SegmentedControl<T extends string>({
     >
       {/* Sliding indicator */}
       <div
-        className="absolute top-1 bottom-1 rounded-lg bg-card shadow-sm border border-border/50 pointer-events-none"
+        className={`absolute top-1 bottom-1 rounded-lg shadow-sm pointer-events-none ${indicatorBg}`}
         style={{
           width: indicator.width,
           transform: `translateX(${indicator.left}px)`,
-          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease',
         }}
       />
-      {options.map((opt) => (
-        <button
-          key={opt.value}
-          ref={(el) => {
-            if (el) itemRefs.current.set(opt.value, el);
-          }}
-          onClick={() => onChange(opt.value)}
-          className={`relative z-10 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center gap-1.5 ${
-            value === opt.value
-              ? 'text-primary'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          {opt.icon}
-          {opt.label}
-        </button>
-      ))}
+      {options.map((opt) => {
+        const isActive = value === opt.value;
+        const textClass = isActive
+          ? (opt.activeTextClass || 'text-primary')
+          : (opt.inactiveTextClass || 'text-muted-foreground hover:text-foreground');
+
+        return (
+          <button
+            key={opt.value}
+            ref={(el) => {
+              if (el) itemRefs.current.set(opt.value, el);
+            }}
+            onClick={() => onChange(opt.value)}
+            className={`relative z-10 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 whitespace-nowrap flex items-center justify-center gap-1.5 ${textClass}`}
+          >
+            {opt.icon}
+            {opt.label}
+          </button>
+        );
+      })}
     </div>
   );
 }

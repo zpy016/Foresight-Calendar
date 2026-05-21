@@ -28,10 +28,10 @@ import { ChevronLeft, ChevronRight, Filter, X, CalendarDays, Clock, Telescope } 
 import Link from 'next/link';
 
 const CATEGORIES = [
-  { value: 'all', label: '全部' },
-  { value: '汽车', label: '汽车' },
-  { value: 'AI', label: 'AI' },
-  { value: '消费电子', label: '消费电子' },
+  { value: 'all', label: '全部', activeIndicatorClass: 'bg-slate-500', activeTextClass: 'text-white', inactiveTextClass: 'text-slate-400 hover:text-slate-500' },
+  { value: '汽车', label: '汽车', activeIndicatorClass: 'bg-orange-500', activeTextClass: 'text-white', inactiveTextClass: 'text-orange-400/60 hover:text-orange-500' },
+  { value: 'AI', label: 'AI', activeIndicatorClass: 'bg-cyan-500', activeTextClass: 'text-white', inactiveTextClass: 'text-cyan-400/60 hover:text-cyan-500' },
+  { value: '消费电子', label: '消费电子', activeIndicatorClass: 'bg-violet-500', activeTextClass: 'text-white', inactiveTextClass: 'text-violet-400/60 hover:text-violet-500' },
 ];
 
 const SCORE_OPTIONS = [
