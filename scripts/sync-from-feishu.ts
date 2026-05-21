@@ -46,22 +46,22 @@ async function getTenantAccessToken() {
 function mapFieldName(baseName: string): string | null {
   const lower = baseName.toLowerCase().replace(/\s+/g, '');
   const rules: [string[], string][] = [
-    [['名称', 'name', '事件名', '标题', '事件名称'], 'name'],
-    [['日期', 'date', '时间日期', '发生日期'], 'date'],
-    [['时间', 'time', '具体时刻', '发生时间'], 'time'],
+    [['名称', 'name', '事件名', '标题', '事件名称', 'title', 'eventname', 'event'], 'name'],
+    [['日期', 'date', '时间日期', '发生日期', 'datetime', 'when', 'day'], 'date'],
+    [['时间', 'time', '具体时刻', '发生时间', 'hour', 'clock'], 'time'],
     [['星期', 'weekday', '周几', '星期几'], 'weekday'],
-    [['类型', 'type', 'eventtype', '事件类型', '线上/线下'], 'eventType'],
-    [['分类', 'category', '类别', '赛道', '领域'], 'category'],
-    [['公司', '企业', 'company', '品牌', '厂商', '车企'], 'company'],
-    [['ai推荐', 'airecommend', '推荐', '评分', 'ai评分', '推荐度'], 'aiRecommend'],
-    [['重要性', 'importance', '重要程度', '优先级'], 'importance'],
-    [['国家', 'country', '地区', '国家/地区'], 'country'],
-    [['城市', 'city', '地点城市'], 'city'],
-    [['地点', 'location', '位置', '地址', 'venue', '场所'], 'location'],
-    [['链接', 'link', 'url', '官网', '网页链接'], 'link'],
-    [['信息链接', 'infolink', '详情链接', '资讯链接'], 'infoLink'],
-    [['一句话总结', 'summary', '一句话', '概述', '简介', '一句话描述'], 'summary'],
-    [['详细描述', 'description', '描述', '详情', '详细介绍', '事件描述'], 'description'],
+    [['类型', 'type', 'eventtype', '事件类型', '线上/线下', 'eventtype'], 'eventType'],
+    [['分类', 'category', '类别', '赛道', '领域', 'tag', 'tags', 'sector', 'industry'], 'category'],
+    [['公司', '企业', 'company', '品牌', '厂商', '车企', 'brand', 'manufacturer', 'maker', 'org', 'organization'], 'company'],
+    [['ai推荐', 'airecommend', '推荐', '评分', 'ai评分', '推荐度', 'score', 'rating', 'rank', 'grade', 'stars'], 'aiRecommend'],
+    [['重要性', 'importance', '重要程度', '优先级', 'priority'], 'importance'],
+    [['国家', 'country', '地区', '国家/地区', 'nation', 'region'], 'country'],
+    [['城市', 'city', '地点城市', 'town'], 'city'],
+    [['地点', 'location', '位置', '地址', 'venue', '场所', 'place', 'address', 'site'], 'location'],
+    [['链接', 'link', 'url', '官网', '网页链接', 'website', 'href'], 'link'],
+    [['信息链接', 'infolink', '详情链接', '资讯链接', 'infolink', 'newslink'], 'infoLink'],
+    [['一句话总结', 'summary', '一句话', '概述', '简介', '一句话描述', 'brief', 'abstract', 'overview'], 'summary'],
+    [['详细描述', 'description', '描述', '详情', '详细介绍', '事件描述', 'detail', 'content', 'text', 'body', 'notes'], 'description'],
   ];
   for (const [keywords, field] of rules) {
     if (keywords.some((k) => lower.includes(k.toLowerCase()))) return field;
