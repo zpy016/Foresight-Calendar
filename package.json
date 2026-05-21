@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "export-data": "tsx scripts/export-data-to-json.ts",
+    "sync": "tsx scripts/sync-from-feishu.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
