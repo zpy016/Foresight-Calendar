@@ -4,6 +4,16 @@ import { join } from 'path';
 
 const prisma = new PrismaClient();
 
+/** Remove invisible garbage characters from text */
+function sanitize(str: string | null): string | null {
+  if (!str) return str;
+  return str
+    .replace(/\ufeff/g, '')   // zero-width no-break space
+    .replace(/\u200b/g, '')   // zero-width space
+    .replace(/\ufffc/g, '')   // object replacement character (box with OBJ)
+    .trim();
+}
+
 async function main() {
   const events = await prisma.event.findMany({
     orderBy: { date: 'asc' },
@@ -12,7 +22,9 @@ async function main() {
   const companySet = new Set<string>();
   events.forEach((event) => {
     try {
-      const companies = JSON.parse(event.company || '[]') as string[];
+      const raw = event.company || '[]';
+      const cleaned = raw.replace(/\ufffc/g, '');
+      const companies = JSON.parse(cleaned) as string[];
       companies.forEach((c) => companySet.add(c));
     } catch {
       // ignore
@@ -24,22 +36,22 @@ async function main() {
     events: events.map((event) => ({
       id: event.id,
       recordId: event.recordId,
-      name: event.name,
+      name: sanitize(event.name) || event.name,
       date: event.date.toISOString(),
-      time: event.time,
-      weekday: event.weekday,
-      eventType: event.eventType,
-      category: event.category,
-      company: event.company,
-      aiRecommend: event.aiRecommend,
-      importance: event.importance,
-      country: event.country,
-      city: event.city,
-      location: event.location,
-      link: event.link,
-      infoLink: event.infoLink,
-      summary: event.summary,
-      description: event.description,
+      time: sanitize(event.time),
+      weekday: sanitize(event.weekday),
+      eventType: sanitize(event.eventType),
+      category: sanitize(event.category) || event.category,
+      company: sanitize(event.company) || event.company,
+      aiRecommend: sanitize(event.aiRecommend),
+      importance: sanitize(event.importance),
+      country: sanitize(event.country),
+      city: sanitize(event.city),
+      location: sanitize(event.location),
+      link: sanitize(event.link),
+      infoLink: sanitize(event.infoLink),
+      summary: sanitize(event.summary),
+      description: sanitize(event.description),
     })),
     uniqueCompanies,
   };
