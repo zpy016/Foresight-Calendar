@@ -18,7 +18,6 @@ export default function TimelineClient({ initialEvents, uniqueCompanies }: Timel
     selectedCompanies,
     minScore,
     currentYear,
-    setCurrentYear,
   } = useFilterStore();
 
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
@@ -48,9 +47,9 @@ export default function TimelineClient({ initialEvents, uniqueCompanies }: Timel
   };
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       {/* Header with all filters */}
-      <header className="flex-shrink-0 border-b border-gray-200 bg-white">
+      <header className="flex-shrink-0 border-b border-border bg-background">
         <FilterBar uniqueCompanies={uniqueCompanies} showYearNav />
       </header>
 

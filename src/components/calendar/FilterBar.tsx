@@ -20,17 +20,18 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { ChevronLeft, ChevronRight, Filter, X, Check, Car, Cpu, Smartphone, CalendarDays, Clock } from 'lucide-react';
+import SegmentedControl from '@/components/ui/segmented-control';
+import ThemeToggle from '@/components/theme/ThemeToggle';
+import { ChevronLeft, ChevronRight, Filter, X, CalendarDays, Clock } from 'lucide-react';
 import Link from 'next/link';
 
 const CATEGORIES = [
-  { key: 'all', label: '全部', icon: null as null, activeClass: 'bg-gray-900 text-white shadow-sm', inactiveClass: 'bg-gray-50 text-gray-500 hover:bg-gray-100' },
-  { key: '汽车', label: '汽车', icon: Car, activeClass: 'bg-emerald-600 text-white shadow-sm', inactiveClass: 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' },
-  { key: 'AI', label: 'AI', icon: Cpu, activeClass: 'bg-amber-500 text-white shadow-sm', inactiveClass: 'bg-amber-50 text-amber-600 hover:bg-amber-100' },
-  { key: '消费电子', label: '消费电子', icon: Smartphone, activeClass: 'bg-blue-500 text-white shadow-sm', inactiveClass: 'bg-blue-50 text-blue-600 hover:bg-blue-100' },
+  { value: 'all', label: '全部' },
+  { value: '汽车', label: '汽车' },
+  { value: 'AI', label: 'AI' },
+  { value: '消费电子', label: '消费电子' },
 ];
 
 const SCORE_OPTIONS = [
@@ -57,7 +58,6 @@ function categorizeCompanies(companies: string[]) {
 
   for (const company of companies) {
     const normalized = normalizeCompany(company);
-
     if (TIER_1_AUTO.has(normalized) || TIER_1_AUTO.has(company)) {
       autoTier1.push(company);
     } else if (TIER_2_AUTO.has(normalized) || TIER_2_AUTO.has(company)) {
@@ -95,16 +95,13 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
     setActiveCategory,
     setMinScore,
     setSelectedCompanies,
-    setCurrentYear,
     prevMonth,
     nextMonth,
     setViewMode,
   } = useFilterStore();
 
   const [companyOpen, setCompanyOpen] = useState(false);
-
   const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-
   const { autoTier1, autoTier2, autoOther, tech, other } = categorizeCompanies(uniqueCompanies);
 
   const toggleCompany = (company: string) => {
@@ -116,100 +113,83 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
   };
 
   return (
-    <div className="flex items-center justify-between py-2.5 px-5">
+    <div className="flex items-center justify-between py-2.5 px-4 sm:px-5 bg-background border-b border-border">
       {/* Left: Logo + Date Navigation */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-base font-bold">F</span>
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+          <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center flex-shrink-0">
+            <span className="text-primary-foreground text-base font-bold">F</span>
           </div>
           <div className="hidden sm:block">
-            <h1 className="text-base font-bold text-gray-900 leading-tight">Foresight 视界线</h1>
-            <p className="text-[11px] text-gray-400 leading-tight">汽车+AI 行业大事件智能日历</p>
+            <h1 className="text-base font-bold text-foreground leading-tight">Foresight 视界线</h1>
+            <p className="text-[11px] text-muted-foreground leading-tight">汽车+AI 行业大事件智能日历</p>
           </div>
-        </div>
+        </Link>
 
-        {/* Month/Year Navigation */}
+        {/* Date Navigation */}
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={prevMonth} className="h-7 w-7 hover:bg-gray-100">
-            <ChevronLeft className="h-4 w-4 text-gray-600" />
-          </Button>
+          <button
+            onClick={prevMonth}
+            className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center
+                       hover:bg-primary hover:text-primary-foreground hover:border-primary
+                       transition-all duration-200"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
           {showYearNav ? (
-            <span className="text-lg font-semibold text-gray-900 min-w-[80px] text-center tabular-nums">
+            <span className="text-lg font-semibold text-foreground min-w-[72px] text-center tabular-nums">
               {currentYear}年
             </span>
           ) : (
-            <span className="text-lg font-semibold text-gray-900 min-w-[120px] text-center tabular-nums">
+            <span className="text-lg font-semibold text-foreground min-w-[110px] text-center tabular-nums">
               {currentYear}年 {monthNames[currentMonth - 1]}
             </span>
           )}
-          <Button variant="ghost" size="icon" onClick={nextMonth} className="h-7 w-7 hover:bg-gray-100">
-            <ChevronRight className="h-4 w-4 text-gray-600" />
-          </Button>
+          <button
+            onClick={nextMonth}
+            className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center
+                       hover:bg-primary hover:text-primary-foreground hover:border-primary
+                       transition-all duration-200"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
-      {/* Right: Filters + View Toggle */}
+      {/* Right: Filters + ThemeToggle */}
       <div className="flex items-center gap-2">
-        {/* View Toggle */}
-        <div className="hidden sm:flex items-center bg-gray-50 rounded-lg p-0.5 mr-1">
-          <Link href="/">
-            <button
-              onClick={() => setViewMode('calendar')}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${
-                viewMode === 'calendar'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <CalendarDays className="h-3.5 w-3.5" />
-              月历
-            </button>
-          </Link>
-          <Link href="/timeline">
-            <button
-              onClick={() => setViewMode('timeline')}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${
-                viewMode === 'timeline'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <Clock className="h-3.5 w-3.5" />
-              时间线
-            </button>
-          </Link>
+        {/* View Toggle (Desktop) */}
+        <div className="hidden md:block">
+          <SegmentedControl
+            options={[
+              { value: 'calendar', label: '月历', icon: <CalendarDays className="w-3.5 h-3.5" /> },
+              { value: 'timeline', label: '时间线', icon: <Clock className="w-3.5 h-3.5" /> },
+            ]}
+            value={viewMode}
+            onChange={(v) => {
+              setViewMode(v as 'calendar' | 'timeline');
+            }}
+          />
         </div>
 
-        {/* Category Pills */}
-        <div className="hidden lg:flex items-center gap-1.5">
-          {CATEGORIES.map((cat) => {
-            const Icon = cat.icon;
-            const isActive = activeCategory === cat.key;
-            return (
-              <button
-                key={cat.key}
-                onClick={() => setActiveCategory(cat.key)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
-                  isActive ? cat.activeClass : cat.inactiveClass
-                }`}
-              >
-                {Icon && <Icon className="h-3.5 w-3.5" />}
-                {cat.label}
-              </button>
-            );
-          })}
+        {/* Category Segmented Control (Desktop) */}
+        <div className="hidden lg:block">
+          <SegmentedControl
+            options={CATEGORIES}
+            value={activeCategory}
+            onChange={setActiveCategory}
+          />
         </div>
 
-        {/* Mobile Category Dropdown */}
+        {/* Mobile Category Select */}
         <div className="lg:hidden">
           <Select value={activeCategory} onValueChange={setActiveCategory}>
-            <SelectTrigger className="w-[90px] h-8 text-sm border-gray-200">
+            <SelectTrigger className="w-[90px] h-8 text-sm border-border bg-card">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {CATEGORIES.map((cat) => (
-                <SelectItem key={cat.key} value={cat.key}>
+                <SelectItem key={cat.value} value={cat.value}>
                   {cat.label}
                 </SelectItem>
               ))}
@@ -219,7 +199,7 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
 
         {/* Score Filter */}
         <Select value={String(minScore)} onValueChange={(v) => setMinScore(Number(v))}>
-          <SelectTrigger className="w-[100px] h-8 text-sm border-gray-200">
+          <SelectTrigger className="w-[100px] h-8 text-sm border-border bg-card">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -237,8 +217,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
             <Button
               variant="outline"
               size="sm"
-              className={`h-8 text-sm gap-1.5 ${
-                selectedCompanies.length > 0 ? 'border-gray-900 bg-gray-50' : 'border-gray-200'
+              className={`h-8 text-sm gap-1.5 border-border ${
+                selectedCompanies.length > 0 ? 'border-primary bg-primary/5 text-primary' : ''
               }`}
             >
               <Filter className="h-3.5 w-3.5" />
@@ -250,15 +230,14 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[400px] p-0" align="end">
+          <PopoverContent className="w-[400px] p-0 bg-card border-border" align="end">
             <Command>
-              <CommandInput placeholder="搜索品牌..." />
+              <CommandInput placeholder="搜索品牌..." className="border-border" />
               <CommandList className="max-h-[400px]">
-                <CommandEmpty>未找到品牌</CommandEmpty>
+                <CommandEmpty className="text-muted-foreground">未找到品牌</CommandEmpty>
 
-                {/* Tier 1 Auto */}
                 {autoTier1.length > 0 && (
-                  <CommandGroup heading="🔥 核心车企">
+                  <CommandGroup heading="🔥 核心车企" className="text-muted-foreground">
                     <div className="flex flex-wrap gap-1.5 p-2">
                       {autoTier1.map((company) => (
                         <button
@@ -266,8 +245,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
                           onClick={() => toggleCompany(company)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                             selectedCompanies.includes(company)
-                              ? 'bg-gray-900 text-white'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground'
                           }`}
                         >
                           {company}
@@ -277,9 +256,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
                   </CommandGroup>
                 )}
 
-                {/* Tier 2 Auto */}
                 {autoTier2.length > 0 && (
-                  <CommandGroup heading="⭐ 重点车企">
+                  <CommandGroup heading="⭐ 重点车企" className="text-muted-foreground">
                     <div className="flex flex-wrap gap-1.5 p-2">
                       {autoTier2.map((company) => (
                         <button
@@ -287,8 +265,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
                           onClick={() => toggleCompany(company)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                             selectedCompanies.includes(company)
-                              ? 'bg-gray-900 text-white'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground'
                           }`}
                         >
                           {company}
@@ -298,9 +276,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
                   </CommandGroup>
                 )}
 
-                {/* Other Auto */}
                 {autoOther.length > 0 && (
-                  <CommandGroup heading="🚗 其他车企">
+                  <CommandGroup heading="🚗 其他车企" className="text-muted-foreground">
                     <div className="flex flex-wrap gap-1.5 p-2">
                       {autoOther.map((company) => (
                         <button
@@ -308,8 +285,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
                           onClick={() => toggleCompany(company)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                             selectedCompanies.includes(company)
-                              ? 'bg-gray-900 text-white'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground'
                           }`}
                         >
                           {company}
@@ -319,9 +296,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
                   </CommandGroup>
                 )}
 
-                {/* Tech */}
                 {tech.length > 0 && (
-                  <CommandGroup heading="💻 科技公司">
+                  <CommandGroup heading="💻 科技公司" className="text-muted-foreground">
                     <div className="flex flex-wrap gap-1.5 p-2">
                       {tech.map((company) => (
                         <button
@@ -329,8 +305,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
                           onClick={() => toggleCompany(company)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                             selectedCompanies.includes(company)
-                              ? 'bg-gray-900 text-white'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground'
                           }`}
                         >
                           {company}
@@ -340,9 +316,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
                   </CommandGroup>
                 )}
 
-                {/* Other */}
                 {other.length > 0 && (
-                  <CommandGroup heading="📦 其他">
+                  <CommandGroup heading="📦 其他" className="text-muted-foreground">
                     <div className="flex flex-wrap gap-1.5 p-2">
                       {other.map((company) => (
                         <button
@@ -350,8 +325,8 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
                           onClick={() => toggleCompany(company)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                             selectedCompanies.includes(company)
-                              ? 'bg-gray-900 text-white'
-                              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-secondary text-muted-foreground hover:bg-accent hover:text-foreground'
                           }`}
                         >
                           {company}
@@ -363,21 +338,21 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
               </CommandList>
             </Command>
             {selectedCompanies.length > 0 && (
-              <div className="border-t p-2.5 flex items-center justify-between bg-gray-50">
+              <div className="border-t border-border p-2.5 flex items-center justify-between bg-secondary/50">
                 <div className="flex flex-wrap gap-1 max-w-[280px]">
                   {selectedCompanies.slice(0, 5).map((c) => (
-                    <span key={c} className="text-xs px-2 py-0.5 bg-white border border-gray-200 rounded-md text-gray-700">
+                    <span key={c} className="text-xs px-2 py-0.5 bg-card border border-border rounded-md text-foreground">
                       {c}
                     </span>
                   ))}
                   {selectedCompanies.length > 5 && (
-                    <span className="text-xs text-gray-400 py-0.5">+{selectedCompanies.length - 5}</span>
+                    <span className="text-xs text-muted-foreground py-0.5">+{selectedCompanies.length - 5}</span>
                   )}
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 text-xs text-gray-500 hover:text-gray-900"
+                  className="h-7 text-xs text-muted-foreground hover:text-foreground"
                   onClick={() => setSelectedCompanies([])}
                 >
                   <X className="h-3 w-3 mr-1" />
@@ -387,6 +362,9 @@ export default function FilterBar({ uniqueCompanies, showYearNav }: FilterBarPro
             )}
           </PopoverContent>
         </Popover>
+
+        {/* Theme Toggle */}
+        <ThemeToggle />
       </div>
     </div>
   );

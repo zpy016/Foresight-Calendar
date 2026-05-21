@@ -26,9 +26,9 @@ export default function EventDetailSheet({ event, open, onOpenChange }: EventDet
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto px-6">
+      <SheetContent className="w-full sm:max-w-md overflow-y-auto px-6 bg-card border-border">
         <SheetHeader className="space-y-4">
-          <SheetTitle className="text-lg leading-relaxed pr-4">
+          <SheetTitle className="text-lg leading-relaxed pr-4 text-foreground">
             {event.name}
           </SheetTitle>
           <SheetDescription className="sr-only">
@@ -39,9 +39,9 @@ export default function EventDetailSheet({ event, open, onOpenChange }: EventDet
         <div className="mt-6 space-y-5">
           {/* Date & Time */}
           <div className="flex items-start gap-3">
-            <Calendar className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+            <Calendar className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
             <div>
-              <div className="text-sm font-medium text-gray-900">
+              <div className="text-sm font-medium text-foreground">
                 {new Date(event.date).toLocaleDateString('zh-CN', {
                   year: 'numeric',
                   month: 'long',
@@ -50,7 +50,7 @@ export default function EventDetailSheet({ event, open, onOpenChange }: EventDet
                 })}
               </div>
               {event.time && (
-                <div className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
+                <div className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
                   <Clock className="w-3 h-3" />
                   {event.time}
                 </div>
@@ -61,8 +61,8 @@ export default function EventDetailSheet({ event, open, onOpenChange }: EventDet
           {/* Location */}
           {(event.country || event.city || event.location) && (
             <div className="flex items-start gap-3">
-              <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-gray-700">
+              <MapPin className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-foreground">
                 {[event.country, event.city, event.location].filter(Boolean).join(' · ')}
                 {event.eventType === '线上' && (
                   <Badge variant="secondary" className="ml-2 text-xs">线上</Badge>
@@ -77,10 +77,10 @@ export default function EventDetailSheet({ event, open, onOpenChange }: EventDet
           {/* Companies */}
           {companies.length > 0 && (
             <div className="flex items-start gap-3">
-              <Building2 className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+              <Building2 className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
               <div className="flex flex-wrap gap-1.5">
                 {companies.map((company) => (
-                  <Badge key={company} variant="outline" className="text-xs">
+                  <Badge key={company} variant="outline" className="text-xs border-border text-foreground">
                     {company}
                   </Badge>
                 ))}
@@ -91,10 +91,10 @@ export default function EventDetailSheet({ event, open, onOpenChange }: EventDet
           {/* Categories */}
           {categories.length > 0 && (
             <div className="flex items-start gap-3">
-              <Tag className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+              <Tag className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" />
               <div className="flex flex-wrap gap-1.5">
                 {categories.map((cat) => (
-                  <Badge key={cat} variant="secondary" className="text-xs">
+                  <Badge key={cat} variant="secondary" className="text-xs bg-secondary text-secondary-foreground">
                     {cat}
                   </Badge>
                 ))}
@@ -105,12 +105,12 @@ export default function EventDetailSheet({ event, open, onOpenChange }: EventDet
           {/* AI Recommend Score */}
           {event.aiRecommend && (
             <div className="flex items-center gap-3">
-              <div className="text-sm text-gray-500">AI推荐:</div>
+              <div className="text-sm text-muted-foreground">AI推荐:</div>
               <div className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                score >= 4 ? 'bg-red-50 text-red-700' :
-                score >= 3 ? 'bg-amber-50 text-amber-700' :
-                score >= 2 ? 'bg-blue-50 text-blue-700' :
-                'bg-gray-50 text-gray-600'
+                score >= 4 ? 'bg-destructive/10 text-destructive' :
+                score >= 3 ? 'bg-primary/10 text-primary' :
+                score >= 2 ? 'bg-secondary text-muted-foreground' :
+                'bg-muted text-muted-foreground'
               }`}>
                 {event.aiRecommend}
               </div>
@@ -120,12 +120,12 @@ export default function EventDetailSheet({ event, open, onOpenChange }: EventDet
           {/* Links */}
           {event.link && (
             <div className="flex items-center gap-3">
-              <LinkIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <LinkIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <a
                 href={event.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-blue-600 hover:underline truncate"
+                className="text-sm text-primary hover:underline truncate"
               >
                 {event.link}
               </a>
@@ -134,17 +134,17 @@ export default function EventDetailSheet({ event, open, onOpenChange }: EventDet
 
           {/* Summary */}
           {event.summary && (
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-xs text-gray-500 mb-1">一句话总结</div>
-              <div className="text-sm text-gray-800">{event.summary}</div>
+            <div className="bg-secondary rounded-lg p-3">
+              <div className="text-xs text-muted-foreground mb-1">一句话总结</div>
+              <div className="text-sm text-foreground">{event.summary}</div>
             </div>
           )}
 
           {/* Description */}
           {event.description && (
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-xs text-gray-500 mb-1">详细描述</div>
-              <div className="text-sm text-gray-800 whitespace-pre-wrap">{event.description}</div>
+            <div className="bg-secondary rounded-lg p-3">
+              <div className="text-xs text-muted-foreground mb-1">详细描述</div>
+              <div className="text-sm text-foreground whitespace-pre-wrap">{event.description}</div>
             </div>
           )}
         </div>

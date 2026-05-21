@@ -56,16 +56,16 @@ export default function MobileCalendar({ events, year, month, onEventClick }: Mo
         key={day}
         className={`flex flex-col items-center justify-center min-w-[48px] h-14 rounded-xl transition-colors ${
           isToday(day)
-            ? 'bg-gray-900 text-white'
+            ? 'bg-primary text-primary-foreground'
             : hasEvents(day)
-            ? 'bg-gray-100 text-gray-900'
-            : 'text-gray-400'
+            ? 'bg-secondary text-foreground'
+            : 'text-muted-foreground'
         }`}
       >
         <span className="text-xs">{WEEKDAYS_SHORT[(firstDayOfWeek + day - 1) % 7]}</span>
         <span className="text-sm font-semibold">{day}</span>
         {hasEvents(day) && !isToday(day) && (
-          <span className="w-1 h-1 rounded-full bg-emerald-500 mt-0.5" />
+          <span className="w-1 h-1 rounded-full bg-primary mt-0.5" />
         )}
       </button>
     );
@@ -96,20 +96,20 @@ export default function MobileCalendar({ events, year, month, onEventClick }: Mo
       {/* Timeline list */}
       <div className="px-4 pb-8 space-y-6">
         {timelineEvents.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 text-sm">
+          <div className="text-center py-12 text-muted-foreground text-sm">
             本月暂无事件
           </div>
         ) : (
           timelineEvents.map(({ day, events }) => (
             <div key={day}>
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-sm font-semibold">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">
                   {day}
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-muted-foreground">
                   {WEEKDAYS_SHORT[(firstDayOfWeek + day - 1) % 7]}
                 </div>
-                <div className="flex-1 h-px bg-gray-100" />
+                <div className="flex-1 h-px bg-border" />
               </div>
               <div className="space-y-2 pl-11">
                 {events.map((event) => {
@@ -118,22 +118,22 @@ export default function MobileCalendar({ events, year, month, onEventClick }: Mo
                     <button
                       key={event.id}
                       onClick={() => onEventClick(event)}
-                      className="w-full text-left bg-white border border-gray-100 rounded-xl p-3 shadow-sm active:scale-[0.98] transition-transform"
+                      className="w-full text-left bg-card border border-border rounded-xl p-3 shadow-sm active:scale-[0.98] transition-transform"
                     >
                       <div className="flex items-start gap-2">
                         <span className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${getCategoryColor(event.category)}`} />
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-900 leading-snug">
+                          <div className="text-sm font-medium text-foreground leading-snug">
                             {event.name}
                           </div>
                           <div className="flex items-center gap-2 mt-1.5">
                             {event.time && (
-                              <span className="text-xs text-gray-500">{event.time}</span>
+                              <span className="text-xs text-muted-foreground">{event.time}</span>
                             )}
                             {companies[0] && (
-                              <span className="text-xs text-gray-400">{companies[0]}</span>
+                              <span className="text-xs text-muted-foreground">{companies[0]}</span>
                             )}
-                            <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">
                               {getFirstCategory(event.category)}
                             </span>
                           </div>

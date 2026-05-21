@@ -59,9 +59,9 @@ export default function CalendarGrid({ events, year, month, onEventClick }: Cale
   return (
     <div className="w-full h-full flex flex-col">
       {/* Weekday headers */}
-      <div className="grid grid-cols-7 border-b border-gray-200">
+      <div className="grid grid-cols-7 border-b border-border">
         {WEEKDAYS.map((day) => (
-          <div key={day} className="py-3 text-center text-sm font-medium text-gray-500">
+          <div key={day} className="py-3 text-center text-sm font-medium text-muted-foreground">
             {day}
           </div>
         ))}
@@ -72,13 +72,13 @@ export default function CalendarGrid({ events, year, month, onEventClick }: Cale
         {calendarDays.map((day, index) => (
           <div
             key={index}
-            className={`border-b border-r border-gray-100 p-2 flex flex-col min-h-0 ${
-              day.isCurrentMonth ? 'bg-white' : 'bg-gray-50'
+            className={`border-b border-r border-border p-2 flex flex-col min-h-0 ${
+              day.isCurrentMonth ? 'bg-card' : 'bg-muted/50'
             }`}
           >
             <div className={`text-sm font-medium mb-1 ${
-              day.isCurrentMonth ? 'text-gray-900' : 'text-gray-300'
-            } ${isToday(day.date) && day.isCurrentMonth ? 'bg-black text-white w-7 h-7 rounded-full flex items-center justify-center' : ''}`}>
+              day.isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/50'
+            } ${isToday(day.date) && day.isCurrentMonth ? 'bg-primary text-primary-foreground w-7 h-7 rounded-full flex items-center justify-center' : ''}`}>
               {day.date}
             </div>
             <div className="space-y-1 overflow-y-auto min-h-0 flex-1">
@@ -89,19 +89,19 @@ export default function CalendarGrid({ events, year, month, onEventClick }: Cale
                   <button
                     key={event.id}
                     onClick={() => onEventClick(event)}
-                    className="w-full text-left text-xs truncate hover:bg-gray-50 rounded px-1 py-0.5 transition-colors flex items-center gap-1"
+                    className="w-full text-left text-xs truncate hover:bg-secondary rounded px-1 py-0.5 transition-colors flex items-center gap-1"
                     title={`${event.name}${event.time ? ` · ${event.time}` : ''}`}
                   >
                     <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${getCategoryColor(event.category)}`} />
-                    <span className="truncate text-gray-700">{event.name}</span>
+                    <span className="truncate text-foreground/80">{event.name}</span>
                     {event.time && (
-                      <span className="text-gray-400 flex-shrink-0 ml-auto">{event.time}</span>
+                      <span className="text-muted-foreground flex-shrink-0 ml-auto text-[10px]">{event.time}</span>
                     )}
                   </button>
                 );
               })}
               {day.events.length > 3 && (
-                <div className="text-xs text-gray-400 px-1">
+                <div className="text-xs text-muted-foreground px-1">
                   +{day.events.length - 3} 更多
                 </div>
               )}

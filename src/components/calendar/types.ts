@@ -19,14 +19,17 @@ export interface CalendarEvent {
   description: string | null;
 }
 
+/* Category colors mapped to Tailwind classes.
+   These must work in both light and dark themes.
+   Using solid colors with sufficient contrast. */
 export const CATEGORY_COLORS: Record<string, string> = {
-  '汽车': 'bg-emerald-500',
-  'AI': 'bg-amber-500',
-  '消费电子': 'bg-blue-500',
+  '汽车': 'bg-orange-500',
+  'AI': 'bg-cyan-500',
+  '消费电子': 'bg-violet-500',
   '泛科技': 'bg-slate-500',
   '航天': 'bg-indigo-500',
   '消费电子-次要': 'bg-sky-400',
-  '无匹配类别': 'bg-gray-400',
+  '无匹配类别': 'bg-muted-foreground',
 };
 
 export const CATEGORY_LABELS: Record<string, string> = {
@@ -65,5 +68,5 @@ export function getFirstCategory(categoryJson: string): string {
 
 export function getCategoryColor(categoryJson: string): string {
   const cat = getFirstCategory(categoryJson);
-  return CATEGORY_COLORS[cat] || 'bg-gray-400';
+  return CATEGORY_COLORS[cat] || 'bg-muted-foreground';
 }
